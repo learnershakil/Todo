@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { PlusCircle, BarChart2, Clock, Trash2, Brain, Sparkles, Atom } from "lucide-react"
+import { Terminal, Code, Zap, BarChart2, Clock, Trash2, Cpu, Gamepad, Trophy, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -14,12 +14,14 @@ type Task = {
   id: string
   title: string
   description: string
-  priority: "Low" | "Medium" | "Urgent"
+  difficulty: "Easy" | "Medium" | "Hard" | "Epic"
   date: string
   timeAgo: string
   progress: number
   aiSuggestion?: string
-  quantumState?: "Superposition" | "Entangled" | "Collapsed"
+  codeSnippet?: string
+  xpReward: number
+  techStack: string[]
 }
 
 type Column = {
@@ -29,102 +31,107 @@ type Column = {
 
 const initialColumns: Column[] = [
   {
-    title: "College Backlog",
+    title: "Backlog Quests",
     tasks: [
       {
         id: "1",
-        title: "Implement Quantum AI Assistant",
-        description: "Integrate quantum-enhanced GPT-5 for task suggestions",
-        priority: "Urgent",
-        date: "August 15, 2025",
+        title: "Implement Quantum Algorithm Visualizer",
+        description: "Create an interactive visualizer for quantum computing algorithms",
+        difficulty: "Epic",
+        date: "2025-08-15",
         timeAgo: "2 hrs ago",
         progress: 0,
-        aiSuggestion: "Utilize quantum entanglement for instant task updates across parallel universes.",
-        quantumState: "Superposition",
+        aiSuggestion: "Consider using WebGL for high-performance 3D rendering of quantum states.",
+        codeSnippet: "function initQuantumVisualizer() {\n  const qubits = initializeQubits(5);\n  // TODO: Implement visualization logic\n}",
+        xpReward: 1000,
+        techStack: ["TypeScript", "React", "WebGL", "Quantum JS"],
       },
       {
         id: "2",
-        title: "Design 5D Holographic UI",
-        description: "Create 5D holographic interface with time manipulation",
-        priority: "Medium",
-        date: "August 18, 2025",
+        title: "Develop AI Code Review Bot",
+        description: "Create an AI-powered bot for automated code reviews",
+        difficulty: "Hard",
+        date: "2025-08-18",
         timeAgo: "1 day ago",
         progress: 0,
-        quantumState: "Entangled",
+        codeSnippet: "class AICodeReviewer {\n  constructor() {\n    this.model = loadNeuralNetwork('code-review-v2');\n  }\n}",
+        xpReward: 750,
+        techStack: ["Python", "TensorFlow", "NLP", "Git API"],
       },
     ],
   },
   {
-    title: "In Flux",
+    title: "In Development",
     tasks: [
       {
         id: "3",
-        title: "Quantum Computing Integration",
-        description: "Implement quantum algorithms for task optimization across multiverses",
-        priority: "Medium",
-        date: "August 20, 2025",
+        title: "Build Neuro-Symbolic IDE Plugin",
+        description: "Develop an IDE plugin that combines neural networks with symbolic AI for code suggestions",
+        difficulty: "Hard",
+        date: "2025-08-20",
         timeAgo: "3 hrs ago",
         progress: 35,
-        quantumState: "Superposition",
+        codeSnippet: "const generateCodeSuggestion = async (context) => {\n  const symbolicRules = extractContextRules(context);\n  return await neuralSymbolicInference(symbolicRules);\n}",
+        xpReward: 800,
+        techStack: ["JavaScript", "Python", "VSCode API", "TensorFlow.js"],
       },
     ],
   },
   {
-    title: "Reality Verification",
+    title: "Code Review",
     tasks: [
       {
         id: "4",
-        title: "Neuro-Quantum Interface Testing",
-        description: "Conduct trials for thought-based task creation and quantum entanglement",
-        priority: "Urgent",
-        date: "August 22, 2025",
+        title: "Optimize Distributed Systems Simulator",
+        description: "Enhance performance of the multi-node distributed systems simulator",
+        difficulty: "Medium",
+        date: "2025-08-22",
         timeAgo: "5 hrs ago",
         progress: 80,
-        quantumState: "Collapsed",
+        codeSnippet: "class DistributedNode {\n  async processMessage(msg: Message) {\n    // TODO: Implement Raft consensus algorithm\n  }\n}",
+        xpReward: 500,
+        techStack: ["Rust", "WebAssembly", "WebWorkers"],
       },
     ],
   },
   {
-    title: "Transcended",
+    title: "Deployed",
     tasks: [
       {
         id: "5",
-        title: "Temporal Paradox Resolution",
-        description: "Implement causality-preserving time loop for task completion",
-        priority: "Low",
-        date: "August 25, 2025",
+        title: "Launch Holographic Code Projection",
+        description: "Release the AR app for projecting and manipulating code in 3D space",
+        difficulty: "Epic",
+        date: "2025-08-25",
         timeAgo: "2 days ago",
         progress: 100,
-        quantumState: "Collapsed",
+        codeSnippet: "function projectCodeHologram(codeBase: CodeBase, space: 3DSpace) {\n  return space.createHolographicProjection(codeBase.toAbstractSyntaxTree());\n}",
+        xpReward: 1500,
+        techStack: ["C++", "OpenGL", "ARKit", "ARCore"],
       },
     ],
   },
 ]
 
-function PriorityBadge({ priority }: { priority: Task["priority"] }) {
+function DifficultyBadge({ difficulty }: { difficulty: Task["difficulty"] }) {
   const colorMap = {
-    Low: "bg-green-500",
-    Medium: "bg-orange-500",
-    Urgent: "bg-red-500",
+    Easy: "bg-green-500",
+    Medium: "bg-yellow-500",
+    Hard: "bg-red-500",
+    Epic: "bg-purple-500",
   }
 
   return (
-    <Badge variant="outline" className={`${colorMap[priority]} text-black`}>
-      {priority}
+    <Badge variant="outline" className={`${colorMap[difficulty]} text-black`}>
+      {difficulty}
     </Badge>
   )
 }
 
-function QuantumStateBadge({ state }: { state: Task["quantumState"] }) {
-  const colorMap = {
-    Superposition: "bg-purple-500",
-    Entangled: "bg-blue-500",
-    Collapsed: "bg-gray-500",
-  }
-
+function TechStackBadge({ tech }: { tech: string }) {
   return (
-    <Badge variant="outline" className={`${colorMap[state]} text-black`}>
-      {state}
+    <Badge variant="outline" className="bg-blue-500 text-white text-xs mr-1 mb-1">
+      {tech}
     </Badge>
   )
 }
@@ -132,7 +139,9 @@ function QuantumStateBadge({ state }: { state: Task["quantumState"] }) {
 export default function TaskBoard() {
   const [columns, setColumns] = useState(initialColumns)
   const { theme, setTheme } = useTheme()
-  const [isHolographic, setIsHolographic] = useState(false)
+  const [xp, setXp] = useState(0)
+  const [level, setLevel] = useState(1)
+  const [isNeonMode, setIsNeonMode] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -142,12 +151,6 @@ export default function TaskBoard() {
           tasks: column.tasks.map((task) => ({
             ...task,
             progress: task.progress < 100 ? task.progress + 1 : 100,
-            quantumState:
-              task.quantumState === "Superposition"
-                ? Math.random() > 0.5
-                  ? "Entangled"
-                  : "Superposition"
-                : task.quantumState,
           })),
         }))
       )
@@ -166,13 +169,15 @@ export default function TaskBoard() {
                 ...column.tasks,
                 {
                   id: Math.random().toString(36).substr(2, 9),
-                  title: "New Quantum Task",
-                  description: "Describe the task across multiple realities",
-                  priority: "Medium",
-                  date: new Date().toLocaleDateString(),
+                  title: "New Coding Quest",
+                  description: "Embark on a new coding adventure",
+                  difficulty: "Medium",
+                  date: new Date().toISOString().split('T')[0],
                   timeAgo: "Just now",
                   progress: 0,
-                  quantumState: "Superposition",
+                  codeSnippet: "// TODO: Write epic code here",
+                  xpReward: 100,
+                  techStack: ["JavaScript", "React"],
                 },
               ],
             }
@@ -190,31 +195,59 @@ export default function TaskBoard() {
     )
   }
 
+  const handleCompleteTask = (task: Task) => {
+    const newXp = xp + task.xpReward
+    setXp(newXp)
+    if (newXp >= level * 1000) {
+      setLevel(level + 1)
+    }
+    handleDeleteTask(task.id)
+  }
+
   return (
-    <div className={`container mx-auto p-4 ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"} text-primary min-h-screen transition-all duration-500 ${isHolographic ? "holographic" : ""}`}>
+    <div className={`container mx-auto p-4 ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"} text-primary min-h-screen transition-all duration-500 ${isNeonMode ? "neon-bg" : ""}`}>
       <style jsx global>{`
-        .holographic {
-          background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,128,128,0.2) 100%);
-          animation: holoPulse 5s infinite alternate;
+        .neon-bg {
+          background: linear-gradient(to right, #000000, #434343);
+          animation: neonPulse 5s infinite alternate;
         }
-        @keyframes holoPulse {
-          0% { box-shadow: 0 0 10px rgba(0,255,255,0.5); }
-          100% { box-shadow: 0 0 50px rgba(0,255,255,0.8); }
+        @keyframes neonPulse {
+          0% { box-shadow: 0 0 5px #ff00de, 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 40px #ff00de; }
+          100% { box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 80px #00ffff; }
         }
-        .quantum-card {
+        .cyber-card {
           backdrop-filter: blur(10px);
-          background: rgba(255,255,255,0.1);
-          border: 1px solid rgba(255,255,255,0.2);
+          background: rgba(0, 0, 0, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        .code-snippet {
+          background: rgba(0, 0, 0, 0.8);
+          border-radius: 4px;
+          padding: 8px;
+          font-family: 'Fira Code', monospace;
+          white-space: pre-wrap;
+          word-break: break-all;
+          border-left: 3px solid #00ffff;
         }
       `}</style>
-      <motion.h1
-        className="text-5xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
+      <motion.div
+        className="text-center mb-8"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, type: "spring" }}
       >
+        <h1 className="text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
         Task Board
-      </motion.h1>
+        </h1>
+        <div className="flex justify-center items-center space-x-4">
+          <Badge variant="outline" className="bg-yellow-500 text-black">
+            Level {level}
+          </Badge>
+          <Progress value={(xp % 1000) / 10} className="w-64 h-2 bg-gray-700" indicatorClassName="bg-blue-500" />
+          <span className="text-sm">{xp} XP</span>
+        </div>
+      </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {columns.map((column) => (
           <motion.div
@@ -224,10 +257,10 @@ export default function TaskBoard() {
             transition={{ duration: 0.5 }}
             className="space-y-4"
           >
-            <div className="flex items-center justify-between bg-primary-foreground p-3 rounded-lg backdrop-blur-lg">
-              <h2 className="text-xl font-bold text-primary">{column.title}</h2>
+            <div className="flex items-center justify-between bg-gray-800 p-3 rounded-lg backdrop-blur-lg">
+              <h2 className="text-xl font-bold text-blue-400">{column.title}</h2>
               <Button variant="ghost" size="icon" onClick={() => handleAddTask(column.title)}>
-                <PlusCircle className="h-5 w-5 text-primary" />
+                <Terminal className="h-5 w-5 text-green-400" />
               </Button>
             </div>
             <AnimatePresence>
@@ -239,54 +272,74 @@ export default function TaskBoard() {
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="quantum-card hover:shadow-lg transition-all duration-300">
+                  <Card className="cyber-card hover:shadow-lg transition-all duration-300">
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center">
-                        <span className="text-primary">{task.title}</span>
+                        <span className="text-blue-400">{task.title}</span>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => handleDeleteTask(task.id)}>
-                                <Trash2 className="h-4 w-4 text-red-400" />
+                              <Button variant="ghost" size="icon" onClick={() => handleCompleteTask(task)}>
+                                <Trophy className="h-4 w-4 text-yellow-400" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Delete Task</p>
+                              <p>Complete Quest</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
+                      <p className="text-sm text-gray-300 mb-2">{task.description}</p>
                       <div className="flex items-center justify-between mb-2">
-                        <PriorityBadge priority={task.priority} />
-                        <QuantumStateBadge state={task.quantumState} />
+                        <DifficultyBadge difficulty={task.difficulty} />
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                          <span className="text-yellow-400 text-sm">{task.xpReward} XP</span>
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground flex items-center mb-2">
+                      <div className="flex flex-wrap mb-2">
+                        {task.techStack.map((tech) => (
+                          <TechStackBadge key={tech} tech={tech} />
+                        ))}
+                      </div>
+                      <div className="text-xs text-gray-400 flex items-center mb-2">
                         <Clock className="h-3 w-3 mr-1" />
                         <span>{task.date}</span>
                         <span className="ml-2">{task.timeAgo}</span>
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Quantum Coherence</span>
-                          <span className="text-xs text-primary">{task.progress}%</span>
+                          <span className="text-xs text-gray-400">Progress</span>
+                          <span className="text-xs text-blue-400">{task.progress}%</span>
                         </div>
-                        <Progress value={task.progress} className="h-2" />
+                        <Progress value={task.progress} className="h-2 bg-gray-700" indicatorClassName="bg-blue-500" />
                       </div>
-                      {task.aiSuggestion && (
+                      {task.codeSnippet && (
                         <motion.div
-                          className="mt-3 bg-primary-foreground bg-opacity-30 p-2 rounded-md"
+                          className="mt-3 code-snippet text-green-400 text-xs"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.5 }}
                         >
-                          <div className="flex items-center text-xs text-primary mb-1">
-                            <Brain className="h-3 w-3 mr-1" />
-                            Quantum AI Insight
+                          <Code className="h-3 w-3 mr-1 inline" />
+                          Code Snippet:
+                          <pre className="mt-1">{task.codeSnippet}</pre>
+                        </motion.div>
+                      )}
+                      {task.aiSuggestion && (
+                        <motion.div
+                          className="mt-3  bg-purple-900 bg-opacity-30 p-2 rounded-md"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5 }}
+                        >
+                          <div className="flex items-center text-xs text-purple-300 mb-1">
+                            <Cpu className="h-3 w-3 mr-1" />
+                            AI Insight
                           </div>
-                          <p className="text-xs text-muted-foreground">{task.aiSuggestion}</p>
+                          <p className="text-xs text-purple-200">{task.aiSuggestion}</p>
                         </motion.div>
                       )}
                     </CardContent>
@@ -298,17 +351,17 @@ export default function TaskBoard() {
         ))}
       </div>
       <div className="mt-8 text-center space-x-4">
-        <Button variant="outline" className="bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button variant="outline" className="bg-blue-700 text-blue-100 hover:bg-blue-600">
           <BarChart2 className="mr-2 h-4 w-4" />
-          Generate Quantum Insights
+          View Coder Stats
         </Button>
-        <Button variant="outline" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-          <Sparkles className="mr-2 h-4 w-4" />
-          Toggle Reality
+        <Button variant="outline" className="bg-purple-700 text-purple-100 hover:bg-purple-600" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+          <Zap className="mr-2 h-4 w-4" />
+          Toggle Theme
         </Button>
-        <Button variant="outline" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setIsHolographic(!isHolographic)}>
-          <Atom className="mr-2 h-4 w-4" />
-          Holographic Mode
+        <Button variant="outline" className="bg-green-700 text-green-100 hover:bg-green-600" onClick={() => setIsNeonMode(!isNeonMode)}>
+          <Gamepad className="mr-2 h-4 w-4" />
+          Neon Mode
         </Button>
       </div>
     </div>
